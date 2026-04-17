@@ -5,6 +5,8 @@ import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <StudioHome />
+    <div className="dark">
+      <StudioHome />
+    </div>
   </React.StrictMode>
 );

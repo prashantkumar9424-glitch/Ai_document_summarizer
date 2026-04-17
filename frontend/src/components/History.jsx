@@ -23,54 +23,54 @@ export default function History() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+    <div className="rounded-2xl border border-border-default bg-secondary p-8 shadow-panel backdrop-blur-xl">
+      <div className="mb-8">
+        <h2 className="text-xl font-bold text-primary mb-3">
           Processing History
         </h2>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-secondary">
           View your previous document and image processing sessions
         </p>
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <span className="ml-3 text-gray-600">Loading history...</span>
+        <div className="flex items-center justify-center py-16">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-accent-primary"></div>
+          <span className="ml-4 text-secondary font-medium">Loading history...</span>
         </div>
       ) : error ? (
-        <div className="text-center py-12">
-          <div className="text-4xl mb-4">📋</div>
-          <p className="text-gray-600 mb-4">{error}</p>
+        <div className="text-center py-16">
+          <div className="text-5xl mb-6 drop-shadow-lg">📋</div>
+          <p className="text-secondary mb-6 font-medium">{error}</p>
           <button
             onClick={loadHistory}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="px-6 py-3 bg-gradient-to-r from-accent-primary to-accent-hover text-white rounded-xl hover:shadow-accent-soft shadow-lg transition-all font-semibold hover:from-accent-hover"
           >
             Try Again
           </button>
         </div>
       ) : history.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="text-4xl mb-4">📋</div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No History Yet</h3>
-          <p className="text-gray-600">
+        <div className="text-center py-16">
+          <div className="text-5xl mb-6 drop-shadow-lg">📋</div>
+          <h3 className="text-xl font-bold text-primary mb-3">No History Yet</h3>
+          <p className="text-secondary max-w-md mx-auto leading-relaxed">
             Your processing history will appear here once you upload documents or images.
           </p>
         </div>
       ) : (
         <div className="space-y-4">
           {history.map((item, index) => (
-            <div key={index} className="border border-gray-200 rounded-lg p-4">
+            <div key={index} className="border border-border-subtle rounded-xl p-6 bg-elevated/50 backdrop-blur-sm hover:bg-elevated hover:shadow-soft transition-all">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900">{item.title}</h4>
-                  <p className="text-sm text-gray-600 mt-1">{item.description}</p>
-                  <p className="text-xs text-gray-500 mt-2">{item.timestamp}</p>
+                  <h4 className="font-bold text-primary text-lg mb-1">{item.title}</h4>
+                  <p className="text-secondary text-sm mb-2 leading-relaxed">{item.description}</p>
+                  <p className="text-muted text-xs">{item.timestamp}</p>
                 </div>
-                <span className={`px-2 py-1 text-xs rounded-full ${
+                <span className={`px-3 py-1.5 text-xs rounded-full font-semibold ${
                   item.type === 'document'
-                    ? 'bg-blue-100 text-blue-800'
-                    : 'bg-green-100 text-green-800'
+                    ? 'bg-accent-bg text-accent-primary'
+                    : 'bg-success/20 text-success border border-success/30'
                 }`}>
                   {item.type}
                 </span>

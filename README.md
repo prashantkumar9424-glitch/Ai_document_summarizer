@@ -1,246 +1,138 @@
-# AI Content Assistant
+# AI Document & Image Analyzer with Contextual Chat
 
-A comprehensive AI-powered application for document summarization, image analysis, and conversational assistance with persistent memory.
+[![Status](https://img.shields.io/badge/status-active-brightgreen.svg)](https://github.com/) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## 🚀 Features
+## Overview
 
-- **Document Summarization**: Upload PDF, DOCX, or TXT files for AI-powered summaries
-- **Image Analysis**: OCR text extraction and visual understanding from images
-- **AI Chat Assistant**: Conversational interface grounded in uploaded content
-- **Persistent Memory**: Long-term memory using Hindsight API for context-aware responses
-- **Modern UI**: Clean, responsive interface built with React and Tailwind CSS
+This is a full-stack web application for **uploading documents and images, extracting/summarizing content using AI + OCR, and chatting with context preserved across sessions**. 
 
-## 🏗️ Architecture
+- **Backend**: Node.js/Express server powered by [Groq](https://groq.com) for fast AI inference (Llama 3.3 vision/text models) and [Hindsight.ai](https://hindsight.ai) for long-term memory storage.
+- **Frontend**: Modern React app with Tailwind CSS for intuitive UI (upload panels, chat, summaries, history).
+- **Key Workflow**: Upload file/image → OCR/text extraction → AI markdown summary → Save to memory → Chat grounded in your uploads.
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   Backend       │    │   External APIs │
-│   (React)       │◄──►│   (Node.js)     │◄──►│                 │
-│                 │    │                 │    │ • Groq API      │
-│ • Upload UI     │    │ • File Parsing  │    │ • Hindsight API │
-│ • Chat Interface│    │ • OCR Processing│    │                 │
-│ • Summary Display│    │ • API Routes   │    └─────────────────┘
-└─────────────────┘    └─────────────────┘
-```
+Perfect for research, analysis, note-taking from PDFs/images, visual data extraction.
 
-### Data Flow
+## Features
 
-1. **Document Upload**: File → Parsing → Groq API → Summary → Hindsight Memory
-2. **Image Upload**: Image → OCR → Groq Analysis → Summary → Hindsight Memory
-3. **Chat**: User Message → Hindsight Recall → Groq Response → Hindsight Storage
+- 📄 **Document Summarization**: Upload PDFs/text files, extract content, get structured AI summary (overview, key details, follow-up questions).
+- 🖼️ **Image Analysis**: Upload images (JPEG/PNG/WEBP), perform OCR + vision AI analysis, handles text/graphics.
+- 💬 **Contextual Chat**: Talk to AI about your uploads; pulls relevant memory/history automatically.
+- 📜 **History & Sessions**: View past summaries, chats, activity feed.
+- 🔒 **Secure Uploads**: Temp storage, size limits (10MB docs, images), auto-cleanup.
+- 🎯 **Production-Ready**: Env-based config, error handling, streaming responses.
 
-## 🛠️ Tech Stack
-
-### Frontend
-- **React 18** with Vite
-- **Tailwind CSS** for styling
-- **Axios** for API calls
-- Responsive, mobile-first design
+## Tech Stack
 
 ### Backend
-- **Node.js** with Express.js
-- **Multer** for file uploads
-- **pdf-parse** for PDF processing
-- **mammoth** for DOCX processing
-- **tesseract.js** for OCR
-- **dotenv** for environment variables
-- **CORS** for cross-origin requests
+- **Runtime**: Node.js, Express.js
+- **AI**: Groq API (llama-3.3-70b-versatile for vision/text/chat)
+- **Memory**: Hindsight.ai API
+- **OCR**: Tesseract.js
+- **File Handling**: Multer, pdf-parse
+- **Storage**: Local filesystem (`storage/uploads`)
 
-### AI & Memory
-- **Groq API** (Llama 3 70B) for LLM inference
-- **Hindsight API** for persistent memory and retrieval
+### Frontend
+- **Framework**: React 18, Vite
+- **Styling**: Tailwind CSS, PostCSS
+- **HTTP**: Axios
+- **UI Components**: Custom (ChatBox, UploadCard, Toast, Sidebar)
 
-## 📋 Prerequisites
+### Scripts
+- Backend: `npm start` or `npm run dev` (server.js on port 3000?)
+- Frontend: `npm run dev` (Vite on :5173)
 
-- Node.js 18+
-- npm or yarn
-- API Keys:
-  - Groq API key
-  - Hindsight API key
+## Prerequisites
 
-## 🚀 Setup Instructions
+1. **Node.js** (v18+)
+2. **API Keys**:
+   - `GROQ_API_KEY`: From [console.groq.com](https://console.groq.com)
+   - `HINDSIGHT_API_KEY`: From [hindsight.ai](https://hindsight.ai)
+3. (Optional) Tesseract data (eng.traineddata included)
 
-### 1. Clone and Install Dependencies
+## Installation
 
 ```bash
-# Backend setup
+# Clone or navigate to project (already local)
+cd c:/Users/dell/OneDrive/Desktop/project1
+
+# Backend
 cd backend
 npm install
 
-# Frontend setup
+# Frontend
 cd ../frontend
 npm install
 ```
 
-### 2. Environment Configuration
-
-Create `.env` file in the `backend` directory:
-
-```env
-PORT=5000
-GROQ_API_KEY=your_groq_api_key_here
-HINDSIGHT_API_KEY=your_hindsight_api_key_here
-```
-
-### 3. Start the Application
-
-```bash
-# Terminal 1: Start Backend
-cd backend
-npm start
-
-# Terminal 2: Start Frontend
-cd frontend
-npm run dev
-```
-
-### 4. Access the Application
-
-Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-## 🔧 API Integration Details
-
-### Groq API Integration
-
-The application uses Groq's Llama 3 70B model for:
-- **Document Summarization**: Structured summaries with short overview, bullet points, and key insights
-- **Image Analysis**: OCR text interpretation and visual understanding
-- **Chat Responses**: Context-aware conversational responses
-
-**Key Features:**
-- Centralized in `groqService.js`
-- Structured prompts for consistent output
-- Error handling and retry logic
-- Temperature and token limits configured
-
-### Hindsight Memory Integration
-
-Hindsight provides persistent memory across sessions:
-- **Document Storage**: Saves summaries with metadata
-- **Image Storage**: Stores analysis results
-- **Chat History**: Maintains conversation context
-- **Context Retrieval**: Semantic search for relevant information
-
-**Memory Types:**
-- `document_summary`: Document processing results
-- `image_summary`: Image analysis results
-- `chat`: Conversation messages
-
-## 📁 Project Structure
+## .env Example (backend/.env)
 
 ```
-/
-├── backend/
-│   ├── server.js              # Express server setup
-│   ├── routes/
-│   │   ├── summarize.js       # Document summarization endpoint
-│   │   ├── image.js          # Image analysis endpoint
-│   │   ├── chat.js           # Chat API endpoint
-│   ├── services/
-│   │   ├── groqService.js    # Groq API integration
-│   │   ├── hindsightService.js # Memory management
-│   ├── utils/
-│   │   ├── fileParser.js     # Document parsing utilities
-│   │   ├── ocr.js           # OCR processing
-│   ├── uploads/              # File upload directory
-│   ├── .env                  # Environment variables
-│   └── package.json
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── UploadCard.jsx    # Document upload interface
-│   │   │   ├── ImageUpload.js    # Image upload interface
-│   │   │   ├── ChatBox.jsx       # Chat interface
-│   │   │   ├── Sidebar.jsx       # Navigation sidebar
-│   │   │   └── Summary.jsx       # Results display
-│   │   ├── pages/
-│   │   │   └── Home.jsx          # Main application page
-│   │   ├── services/
-│   │   │   └── api.js            # Frontend API client
-│   │   ├── App.jsx               # Root component
-│   │   ├── main.jsx              # Application entry point
-│   │   └── index.css             # Global styles
-│   ├── tailwind.config.js        # Tailwind configuration
-│   ├── postcss.config.js         # PostCSS configuration
-│   ├── vite.config.js            # Vite configuration
-│   ├── package.json
-│   └── index.html
-└── README.md
+GROQ_API_KEY=your_groq_key_here
+HINDSIGHT_API_KEY=your_hindsight_key_here
+PORT=3000
+GROQ_MODEL=llama-3.3-70b-versatile
+HINDSIGHT_API_URL=https://api.hindsight.ai
 ```
 
-## 🎨 UI/UX Design
+## Running the App
 
-- **Clean SaaS Interface**: White background with subtle shadows
-- **Responsive Design**: Mobile-first approach with Tailwind CSS
-- **Intuitive Navigation**: Sidebar-based navigation with clear sections
-- **Loading States**: Spinner indicators during processing
-- **Error Handling**: User-friendly error messages and toast notifications
-- **Accessibility**: Proper contrast ratios and keyboard navigation
+1. **Start Backend**:
+   ```bash
+   cd backend
+   npm start
+   # or npm run dev
+   ```
+   Server runs at `http://localhost:3000`
 
-## 🔒 Security & Production Considerations
+2. **Start Frontend** (new terminal):
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+   App opens at `http://localhost:5173`
 
-- **File Upload Validation**: Type and size restrictions
-- **Error Handling**: Comprehensive error catching and user feedback
-- **Environment Variables**: Sensitive data stored securely
-- **CORS Configuration**: Proper cross-origin request handling
-- **Input Sanitization**: Validation of user inputs
+3. Open browser to frontend URL, upload files, chat!
 
-## 🚀 Deployment
+## API Endpoints
 
-### Backend Deployment
-```bash
-# Build for production
-npm run build
+All under `/api/` (POST multipart/form-data or JSON).
 
-# Use PM2 or similar for production
-pm2 start server.js --name "ai-backend"
-```
+| Endpoint | Method | Description | Params |
+|----------|--------|-------------|--------|
+| `/api/summarize` | POST | Summarize document | `file` (PDF/text, max 10MB) |
+| `/api/image` | POST | Analyze image w/ OCR+vision | `image` (JPEG/PNG/WEBP) |
+| `/api/chat` | POST | Send chat message | JSON `{ message: string }` (auto-loads context) |
 
-### Frontend Deployment
-```bash
-# Build for production
-npm run build
+**Responses**: JSON `{ summary: markdown, ocrText?, filename?, mode: 'vision'|'ocr'|'text' }`
 
-# Serve static files with nginx/apache or deploy to Vercel/Netlify
-```
+Health check: `GET /health` → `{ status: 'ok', groqConfigured: true, hindsightConfigured: true }`
 
-## 🤝 Contributing
+## Usage
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+1. **Upload Document**: Drag PDF → Get summary → 2-3 follow-up Qs suggested.
+2. **Upload Image**: Drag photo → OCR text + visual desc (e.g., charts/tables) → Summary.
+3. **Chat**: Type query → AI references your uploads/memory: \"Based on the image summary...\"
+4. **History**: Sidebar shows sessions, summaries, reload context.
 
-## 📄 License
+![Demo Screenshot](screenshots/demo.png) *(Add your screenshots here)*
 
-This project is licensed under the MIT License.
+## Troubleshooting
 
-## 🆘 Troubleshooting
+- **No summary**: Check API keys, file size/type (PDF/images only).
+- **OCR fails**: Ensure `eng.traineddata` present.
+- **CORS**: Frontend origin auto-config.
+- Logs: Console output for errors.
 
-### Common Issues
+## Contributing
 
-**Backend won't start:**
-- Check if PORT 5000 is available
-- Verify API keys in `.env`
-- Ensure all dependencies are installed
+1. Fork & PR.
+2. Install deps, run tests (add if needed).
+3. Follow ESLint/Prettier.
 
-**File upload fails:**
-- Check file size limits (10MB for documents, 5MB for images)
-- Verify supported file types
-- Check uploads directory permissions
+## License
 
-**OCR not working:**
-- Ensure tesseract.js is properly installed
-- Check image quality and text clarity
+MIT License - see [LICENSE](LICENSE) *(create if needed)*.
 
-**Memory not persisting:**
-- Verify Hindsight API key
-- Check network connectivity to Hindsight API
+---
 
-### Development Tips
-
-- Use browser dev tools for debugging
-- Check server logs for backend errors
-- Test with small files first
-- Use the browser's network tab to monitor API calls
+⭐ Star on GitHub! Questions? Open issue.
