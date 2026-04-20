@@ -8,6 +8,9 @@ import StudioSidebar from "../components/StudioSidebar";
 
 export default function StudioHome() {
   const [activeTab, setActiveTab] = useState("upload");
+  const [showLoginSidebar, setShowLoginSidebar] = useState(false);
+  const [user, setUser] = useState(null);
+  const [chatHistory, setChatHistory] = useState([]);
   const [documentSummary, setDocumentSummary] = useState(null);
   const [imageSummary, setImageSummary] = useState(null);
   const [activity, setActivity] = useState([]);
@@ -70,9 +73,44 @@ export default function StudioHome() {
     }
   };
 
+  const toggleLoginSidebar = () => setShowLoginSidebar(!showLoginSidebar);
+
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+    setChatHistory([]); // Load history
+    setShowLoginSidebar(false);
+  };
+
+  const handleGuestLogin = (session) => {
+    setUser({ ...session.user, type: 'guest' });
+    setShowLoginSidebar(false);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setChatHistory([]);
+  };
+
   return (
     <div className="app-shell">
-      <StudioSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+      <StudioSidebar 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab}
+        showLoginSidebar={showLoginSidebar}
+        onToggleLoginSidebar={toggleLoginSidebar}
+        user={user}
+        chatHistory={chatHistory}
+        onLoginSuccess={handleLoginSuccess}
+        onGuestLogin={handleGuestLogin}
+        onLogout={handleLogout}
+        onSaveChat={(chatEntry) => {
+          setChatHistory(prev => {
+            const newHistory = [chatEntry, ...prev.slice(0, 24)];
+            localStorage.setItem('userChatHistory', JSON.stringify(newHistory));
+            return newHistory;
+          });
+        }}
+      />
 
       <main className="app-main">
         <section className="hero">

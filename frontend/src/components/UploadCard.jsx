@@ -13,7 +13,6 @@ export default function UploadCard({ onSummary }) {
   const handleFile = async (file) => {
     if (!file) return;
 
-    // Validate file type
     const allowedTypes = [
       'application/pdf',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -26,7 +25,6 @@ export default function UploadCard({ onSummary }) {
       return;
     }
 
-    // Validate file size (10MB)
     if (file.size > 10 * 1024 * 1024) {
       setError("File size must be less than 10MB.");
       addToast("❌ File too large. Maximum size: 10MB", "error");
@@ -41,7 +39,6 @@ export default function UploadCard({ onSummary }) {
       const formData = new FormData();
       formData.append("file", file);
 
-      // Simulate progress
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => Math.min(prev + Math.random() * 30, 90));
       }, 300);
@@ -52,8 +49,6 @@ export default function UploadCard({ onSummary }) {
       
       onSummary(response.summary);
       addToast(`✅ Document summarized successfully!`, "success");
-      
-      // Reset after success
       setTimeout(() => {
         setUploadProgress(0);
       }, 500);

@@ -9,27 +9,48 @@ export default function History() {
     loadHistory();
   }, []);
 
-  const loadHistory = async () => {
+  const HISTORY_KEY = 'chatHistory';
+
+  const loadHistory = () => {
     try {
-      setLoading(true);
-      // Note: This would require a backend endpoint to retrieve history
-      // For now, we'll show a placeholder
-      setHistory([]);
+      const saved = localStorage.getItem(HISTORY_KEY);
+      if (saved) {
+        setHistory(JSON.parse(saved));
+      }
+      setError("");
     } catch (err) {
-      setError("Failed to load history");
+      setError("Failed to load chat history");
+      setHistory([]);
     } finally {
       setLoading(false);
     }
   };
 
+  const saveHistory = (newEntry) => {
+    try {
+      const updated = [
+        newEntry,
+        ...history.slice(0, 49) // Keep last 50
+      ];
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+      setHistory(updated);
+    } catch (err) {
+      console.error('Failed to save history', err);
+    }
+  };
+
+  useEffect(() => {
+    loadHistory();
+  }, []);
+
   return (
     <div className="rounded-2xl border border-border-default bg-secondary p-8 shadow-panel backdrop-blur-xl">
       <div className="mb-8">
         <h2 className="text-xl font-bold text-primary mb-3">
-          Processing History
+          Chat History
         </h2>
         <p className="text-sm text-secondary">
-          View your previous document and image processing sessions
+          Previous conversations and processing sessions (login to save permanently)
         </p>
       </div>
 

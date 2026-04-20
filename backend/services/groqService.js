@@ -1,7 +1,8 @@
+import "../env.js";
 import fs from "fs/promises";
 import axios from "axios";
 
-const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_CHAT_COMPLETIONS_URL = "https://api.groq.com/openai/v1/chat/completions";
 const TEXT_MODEL = process.env.GROQ_TEXT_MODEL || process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
 const VISION_MODEL = process.env.GROQ_VISION_MODEL || "meta-llama/llama-4-scout-17b-16e-instruct";
 const MAX_DOCUMENT_CHARS = 14000;
@@ -9,13 +10,18 @@ const MAX_CONTEXT_CHARS = 7000;
 const MAX_HISTORY_MESSAGES = 6;
 const MAX_VISION_BYTES = 3 * 1024 * 1024;
 
-function requireGroqKey() {
-  if (!process.env.GROQ_API_KEY) {
+function getGroqApiKey() {
+  const rawKey = process.env.GROQ_API_KEY?.trim();
+  const normalizedKey = rawKey?.replace(/^Bearer\s+/i, "").replace(/^['"]|['"]$/g, "").trim();
+
+  if (!normalizedKey) {
     throw new Error("GROQ_API_KEY is not configured.");
   }
+
+  return normalizedKey;
 }
 
-function compactText(value, maxChars) {
+export function compactText(value, maxChars) {
   if (!value) {
     return "";
   }
@@ -38,17 +44,17 @@ function formatHistory(history = []) {
     .join("\n");
 }
 
-async function requestGroq({
+export async function requestGroq({
   messages,
   model = TEXT_MODEL,
   temperature = 0.2,
   maxTokens = 1100
 }) {
-  requireGroqKey();
+  const apiKey = getGroqApiKey();
 
   try {
     const response = await axios.post(
-      GROQ_URL,
+      GROQ_CHAT_COMPLETIONS_URL,
       {
         model,
         messages,
@@ -58,7 +64,7 @@ async function requestGroq({
       {
         timeout: 60000,
         headers: {
-          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json"
         }
       }
@@ -70,6 +76,10 @@ async function requestGroq({
       error.response?.data?.error?.message ||
       error.response?.data?.message ||
       error.message;
+
+    if (error.response?.status === 401) {
+      throw new Error("Groq request failed: invalid GROQ_API_KEY. Update backend/.env with a valid Groq API key.");
+    }
 
     throw new Error(`Groq request failed: ${apiMessage}`);
   }

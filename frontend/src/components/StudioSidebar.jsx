@@ -1,4 +1,17 @@
-export default function StudioSidebar({ activeTab, onTabChange }) {
+import { useState } from "react";
+import LoginSidebar from "./LoginSidebar";
+
+export default function StudioSidebar({ 
+  activeTab, 
+  onTabChange, 
+  showLoginSidebar, 
+  onToggleLoginSidebar, 
+  user, 
+  chatHistory, 
+  onLoginSuccess, 
+  onGuestLogin, 
+  onLogout 
+}) {
   const tabs = [
     { id: "upload", label: "Documents", hint: "PDF, DOCX, TXT" },
     { id: "image", label: "Images", hint: "Screenshots and photos" },
@@ -28,7 +41,26 @@ export default function StudioSidebar({ activeTab, onTabChange }) {
             <span className="nav-hint">{tab.hint}</span>
           </button>
         ))}
+        
+        <button
+          type="button"
+          onClick={onToggleLoginSidebar}
+          className={`nav-button login-toggle ${showLoginSidebar ? "is-active" : ""}`}
+        >
+          <span className="nav-label">Login</span>
+          <span className="nav-hint">{showLoginSidebar ? "Hide sidebar" : "Save chats"}</span>
+        </button>
       </nav>
+
+      {showLoginSidebar && (
+        <LoginSidebar 
+          user={user}
+          chatHistory={chatHistory}
+          onLoginSuccess={onLoginSuccess}
+          onGuestLogin={onGuestLogin}
+          onLogout={onLogout}
+        />
+      )}
 
       <div className="sidebar-note">
         <span className="status-chip">Session memory</span>

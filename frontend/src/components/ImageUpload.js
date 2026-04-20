@@ -12,14 +12,12 @@ export default function ImageUpload({ onSummary }) {
   const handleFile = async (file) => {
     if (!file) return;
 
-    // Validate file type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
       setError("Please upload a JPEG, PNG, or WEBP image.");
       return;
     }
 
-    // Validate file size (5MB)
     if (file.size > 5 * 1024 * 1024) {
       setError("File size must be less than 5MB.");
       return;
@@ -35,7 +33,6 @@ export default function ImageUpload({ onSummary }) {
       const response = await api.summarizeImage(formData);
       onSummary(response);
       addToast("Image analyzed successfully.", "success");
-
     } catch (err) {
       const errorMessage = err.message || "Failed to process image";
       setError(errorMessage);

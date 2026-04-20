@@ -1,11 +1,14 @@
-import "dotenv/config";
+import "./env.js";
 import fs from "fs";
 import cors from "cors";
 import express from "express";
+import authRoute from "./routes/auth.js";
 import { FRONTEND_ORIGIN, UPLOAD_DIR } from "./config.js";
+import { buildApplicationModel, getApplicationIdentity, getProductBlueprint } from "./services/productModelService.js";
 import summarizeRoute from "./routes/summarize.js";
 import imageRoute from "./routes/image.js";
 import chatRoute from "./routes/chat.js";
+import tasksRoute from "./routes/tasks.js";
 
 const app = express();
 const allowedOrigins = FRONTEND_ORIGIN.split(",")
@@ -33,17 +36,30 @@ app.use(
 );
 app.use(express.json({ limit: "1mb" }));
 
+app.use("/api/auth", authRoute);
+
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
     groqConfigured: Boolean(process.env.GROQ_API_KEY),
-    hindsightConfigured: Boolean(process.env.HINDSIGHT_API_KEY)
+    hindsightConfigured: Boolean(process.env.HINDSIGHT_API_KEY),
+    authEnabled: true,
+    application: getApplicationIdentity()
+  });
+});
+
+app.get("/api/application-model", (req, res) => {
+  res.json({
+    identity: getApplicationIdentity(),
+    blueprint: getProductBlueprint(),
+    workspace: buildApplicationModel("document-text")
   });
 });
 
 app.use("/api/summarize", summarizeRoute);
 app.use("/api/image", imageRoute);
 app.use("/api/chat", chatRoute);
+app.use("/api/tasks", tasksRoute);
 
 app.use((error, req, res, next) => {
   if (res.headersSent) {
@@ -58,3 +74,4 @@ app.use((error, req, res, next) => {
 });
 
 export default app;
+

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { httpApi } from "../services/httpApi";
 
-export default function AssistantChatPanel({ hasContext, onActivity }) {
+export default function AssistantChatPanel({ hasContext, onActivity, user, onSaveChat }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,7 +25,8 @@ export default function AssistantChatPanel({ hasContext, onActivity }) {
       const history = [...messages, userMessage].slice(-6);
       const response = await httpApi.chat({
         message: userMessage.content,
-        history
+        history,
+        userId: user?.id || 'guest'
       });
 
       const aiMessage = {
@@ -41,6 +42,21 @@ export default function AssistantChatPanel({ hasContext, onActivity }) {
         detail: response.response,
         tab: "chat"
       });
+
+      // Auto-save to history
+      if (user && onSaveChat) {
+        const chatEntry = {
+          id: Date.now().toString(),
+          title: userMessage.content.slice(0, 50) + '...',
+          preview: response.response.slice(0, 100) + '...',
+          query: userMessage.content,
+          answer: response.response,
+          type: 'chat',
+          timestamp: new Date().toLocaleString(),
+          userId: user.id
+        };
+        onSaveChat(chatEntry);
+      }
     } catch (error) {
       setMessages((current) => [
         ...current,

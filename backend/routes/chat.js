@@ -12,7 +12,6 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // Recall relevant context from memory
     const memories = await recallMemory(message, 10);
     const context = memories
       .map((memory) => memory.content)

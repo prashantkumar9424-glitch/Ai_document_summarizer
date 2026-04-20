@@ -1,8 +1,6 @@
+import "../env.js";
 import axios from "axios";
-
-/* =======================
-   Configuration
-======================= */
+import { getApplicationIdentity } from "./productModelService.js";
 
 const BASE = process.env.HINDSIGHT_API_URL || "https://api.hindsight.ai";
 const MEMORY_PATH = process.env.HINDSIGHT_MEMORY_PATH || "/memory";
@@ -10,10 +8,6 @@ const SEARCH_PATH = process.env.HINDSIGHT_SEARCH_PATH || "/search";
 const MAX_LOCAL_MEMORIES = 80;
 
 const localMemories = [];
-
-/* =======================
-   Helpers
-======================= */
 
 function hasRemoteConfig() {
   return Boolean(process.env.HINDSIGHT_API_KEY);
@@ -69,17 +63,19 @@ function searchLocalMemories(query, limit) {
     .slice(0, limit);
 }
 
-/* =======================
-   Core API
-======================= */
-
 export async function saveMemory(content, type = "general", metadata = {}) {
+  const identity = getApplicationIdentity();
   const record = {
     id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     content: compactText(content),
     type,
     metadata: {
       timestamp: new Date().toISOString(),
+      application: identity.brand,
+      execution: identity.execution,
+      structure: identity.structure,
+      continuation: identity.continuation,
+      productThinking: identity.productThinking,
       ...metadata,
     },
   };
@@ -145,13 +141,12 @@ export async function recallMemory(query, limit = 5) {
   }
 }
 
-/* =======================
-   Specialized Saves
-======================= */
-
 export async function saveDocumentSummary(filename, summary, sourceText = "") {
   await saveMemory(
-    `Document Summary - ${filename}
+    `iNSIGHTS Document Summary - ${filename}
+
+Execution: Project HUB
+Structure: AI To-Do engine
 
 Summary:
 ${summary}
@@ -165,7 +160,10 @@ ${compactText(sourceText, 3500)}`,
 
 export async function saveImageSummary(filename, summary, ocrText = "") {
   await saveMemory(
-    `Image Summary - ${filename}
+    `iNSIGHTS Image Summary - ${filename}
+
+Continuation: Grant + onboarding
+Product thinking: Deep Search
 
 Summary:
 ${summary}
@@ -179,7 +177,11 @@ ${compactText(ocrText, 2500)}`,
 
 export async function saveChatMessage(userMessage, aiResponse) {
   await saveMemory(
-    `User: ${userMessage}\nAI: ${aiResponse}`,
+    `Continuation: Grant + onboarding
+Product thinking: Deep Search
+
+User: ${userMessage}
+AI: ${aiResponse}`,
     "chat",
     { userMessage, aiResponse }
   );

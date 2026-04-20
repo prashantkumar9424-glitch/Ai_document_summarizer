@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import multer from "multer";
 import path from "path";
 import { MAX_DOCUMENT_SIZE, UPLOAD_DIR } from "../config.js";
-import { parseFile } from "../utils/fileParser.js";
+import { isSupportedDocumentFile, parseFile, SUPPORTED_DOCUMENT_LABEL } from "../utils/fileParser.js";
 import { summarizeDocument } from "../services/groqService.js";
 import { saveDocumentSummary } from "../services/hindsightService.js";
 
@@ -12,16 +12,35 @@ const upload = multer({
   dest: UPLOAD_DIR,
   limits: { fileSize: MAX_DOCUMENT_SIZE },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = [
-      "application/pdf",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "text/plain"
-    ];
-    if (allowedTypes.includes(file.mimetype)) {
+    if (isSupportedDocumentFile(file)) {
       cb(null, true);
     } else {
-      cb(new Error("Invalid file type. Only PDF, DOCX, and TXT files are allowed."));
+      cb(new Error(`Invalid file type. Supported files: ${SUPPORTED_DOCUMENT_LABEL}.`));
     }
+  }
+});
+
+router.post("/text", async (req, res) => {
+  try {
+    const text = String(req.body?.text || "").trim();
+
+    if (!text) {
+      return res.status(400).json({ error: "Text is required" });
+    }
+
+    const summary = await summarizeDocument(text);
+
+    await saveDocumentSummary("Voice or typed notes", summary, text);
+
+    res.json({
+      summary,
+      filename: "Voice or typed notes",
+      fileType: ".txt",
+      excerpt: text.slice(0, 1200)
+    });
+  } catch (error) {
+    console.error("Summarize text error:", error);
+    res.status(500).json({ error: error.message || "Failed to summarize text" });
   }
 });
 
