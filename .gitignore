@@ -8,5 +8,6 @@ dist
 coverage
 tmp
 uploads
+!apps/web/src/components/uploads/
 apps/api/tmp
 *.log
