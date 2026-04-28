@@ -1,0 +1,12 @@
+node_modules
+dist
+.turbo
+.vite
+.env
+.env.local
+.env.*.local
+coverage
+tmp
+uploads
+apps/api/tmp
+*.log

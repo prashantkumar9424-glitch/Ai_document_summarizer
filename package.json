@@ -1,0 +1,23 @@
+{
+  "name": "knowledge-intelligence-platform",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run build --workspace @platform/shared && concurrently \"npm run dev --workspace @platform/api\" \"npm run dev --workspace @platform/web\"",
+    "build": "npm run build --workspace @platform/shared && npm run build --workspace @platform/api && npm run build --workspace @platform/web",
+    "typecheck": "npm run typecheck --workspace @platform/shared && npm run typecheck --workspace @platform/api && npm run typecheck --workspace @platform/web",
+    "lint": "npm run lint --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.105.0"
+  }
+}
